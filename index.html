@@ -801,6 +801,9 @@
                             viewDashboard.classList.remove('hidden');
                             btnLogin.innerHTML = originalText;
                             btnLogin.disabled = false;
+                            
+                            // ++ ARAHAN BARU: MUAT TURUN DATA SEBAIK SAHAJA BERJAYA LOGIN ++
+                            muatTurunData();
                         }, 300);
                     } else {
                         // Jika salah ID atau Password
@@ -856,6 +859,86 @@
             if (event.target == addStudentModal) closeModal('modal-add-student');
             if (event.target == addTeacherModal) closeModal('modal-add-teacher');
             if (event.target == directoryModal) closeModal('modal-directory');
+        }
+
+        // ==========================================
+        // FUNGSI MUAT TURUN DATA (BARU)
+        // ==========================================
+        async function muatTurunData() {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'getData' })
+                });
+                const result = await response.json();
+                
+                if(result.status === 'success') {
+                    // Update Statistik Pelajar & Guru
+                    document.getElementById('stat-pelajar').innerText = result.pelajar.length;
+                    document.getElementById('stat-guru').innerText = result.guru.length;
+
+                    // Update UI Direktori
+                    kemaskiniUI_Direktori(result.guru, result.pelajar);
+                }
+            } catch(e) {
+                console.error("Ralat tarik data: ", e);
+            }
+        }
+
+        // FUNGSI BINA UI KAD GURU & PELAJAR (BARU)
+        function kemaskiniUI_Direktori(senaraiGuru, senaraiPelajar) {
+            const container = document.getElementById('senarai-direktori-container');
+            container.innerHTML = ''; // Buang ikon loading
+
+            if(senaraiGuru.length === 0) {
+                container.innerHTML = '<p class="text-xs text-center text-gray-500 mt-4">Belum ada data guru didaftarkan.</p>';
+                return;
+            }
+
+            // Loop untuk setiap Guru
+            senaraiGuru.forEach(guru => {
+                const namaGuru = guru[1] || 'Tiada Nama'; // Lajur B (Nama)
+                const telGuru = guru[2] || '-';           // Lajur C (Telefon)
+                const inisial = namaGuru.substring(0, 2).toUpperCase();
+
+                // Cari pelajar yang sepadan dengan nama Guru ini (Lajur C Pelajar)
+                const pelajarDiBawahGuru = senaraiPelajar.filter(p => p[2] === namaGuru);
+                
+                let htmlPelajar = '';
+                if(pelajarDiBawahGuru.length > 0) {
+                    pelajarDiBawahGuru.forEach((p, index) => {
+                        const namaPelajar = p[1];
+                        const tahap = p[3] || 'Umum'; // Lajur D (Tahap)
+                        htmlPelajar += `
+                            <div class="flex justify-between items-center text-xs bg-gray-50 p-2 rounded-lg border border-gray-100 mb-1">
+                                <span class="font-semibold text-gray-700">${index + 1}. ${namaPelajar}</span>
+                                <span class="bg-brand-lightpink text-brand-pink text-[9px] font-bold px-2 py-0.5 rounded-full">${tahap}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    htmlPelajar = '<p class="text-[10px] text-gray-400 italic">Tiada pelajar didaftarkan di bawah guru ini.</p>';
+                }
+
+                // Cantumkan Kad UI
+                const htmlKad = `
+                    <div class="bg-white border border-gray-100 rounded-2xl p-4 shadow-sm mb-4">
+                        <div class="flex items-center gap-3 mb-3 border-b border-gray-50 pb-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-sm">${inisial}</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-sm">${namaGuru}</h4>
+                                <p class="text-[10px] text-gray-500"><i class="fa-solid fa-phone text-[9px]"></i> ${telGuru}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-[10px] font-bold text-gray-400 uppercase">Pelajar Seliaan:</p>
+                            ${htmlPelajar}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += htmlKad;
+            });
         }
 
         // Fungsi Simpan Kehadiran (Demo)
