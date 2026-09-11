@@ -692,7 +692,109 @@
             container.innerHTML = html;
         }
 
+        <!-- ... existing code ... -->
+        function kemaskiniUI_JadualLengkap() {
+            const container = document.getElementById('senarai-kelas-hari-ini');
+            let html = '';
+            const todayStr = new Date().toLocaleDateString('ms-MY');
+            
+            let senaraiPaparan = myPelajar;
+            const ro = currentUser.role.toLowerCase();
+
+            if (ro === 'guru') {
+                senaraiPaparan = myPelajar.filter(p => p[2] === currentUser.name);
+            } else if (ro !== 'admin' && ro !== 'pentadbir') {
+                senaraiPaparan = myPelajar.filter(p => p[1] === currentUser.name || p[0] == currentUser.id);
+            }
+            
+            if(senaraiPaparan.length === 0) {
+                container.innerHTML = '<tr><td colspan="5" class="text-xs text-center text-gray-400 py-6">Tiada rekod kelas dijumpai.</td></tr>';
+                return;
+            }
+
+            senaraiPaparan.forEach(p => {
+                const nama = p[1], guru = p[2] || '-';
+                const masa = p[4] ? p[4] : 'Sila kemaskini'; // Jika tiada masa
+                const jenis = p[5] ? p[5] : 'Online'; // Jika tiada jenis kelas
+                
+                const isHadir = myKehadiran.some(k => k[0] === todayStr && k[1] === nama);
+                const statusHtml = isHadir 
+                    ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[9px] font-bold">Hadir</span>'
+                    : '<span class="bg-gray-100 text-gray-500 px-2 py-1 rounded text-[9px] font-bold whitespace-nowrap">Belum</span>';
+
+                html += `
+                <tr class="text-[10px] border-b border-gray-50 hover:bg-rose-50 transition cursor-pointer" onclick="bukaPilihanKelas('${nama}', '${guru}')">
+                    <td class="py-3 pr-3 font-semibold text-gray-700 whitespace-nowrap">${masa}</td>
+                    <td class="py-3 pr-3 font-bold text-gray-800">${nama}</td>
+                    <td class="py-3 pr-3 text-gray-600 whitespace-nowrap">${guru}</td>
+                    <td class="py-3 pr-3 text-gray-600">${jenis}</td>
+                    <td class="py-3 text-right">${statusHtml}</td>
+                </tr>`;
+            });
+            container.innerHTML = html;
+        }
+
         function bukaPilihanKelas(nama, guru) {
+            const ro = currentUser.role.toLowerCase();
+            
+            document.getElementById('tindakan-nama').innerText = nama;
+            
+            const btnLaporan = document.getElementById('btn-tindakan-laporan');
+            const btnResit = document.getElementById('btn-tindakan-resit');
+
+            // Tetapan Butang Laporan (Beza antara Admin/Guru vs Pelajar)
+            if (ro === 'admin' || ro === 'pentadbir' || ro === 'guru') {
+                btnLaporan.innerHTML = '<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm"><i class="fa-solid fa-file-pen"></i></div> Isi & Semak Laporan Prestasi';
+            } else {
+                btnLaporan.innerHTML = '<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm"><i class="fa-solid fa-file-lines"></i></div> Lihat Laporan Prestasi';
+            }
+
+            // Tetapan Butang Resit (Beza antara Admin, Guru, vs Pelajar)
+            if (ro === 'admin' || ro === 'pentadbir') {
+                btnResit.innerHTML = '<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm"><i class="fa-solid fa-money-bill-wave"></i></div> Rekod Yuran & Jana Resit';
+                btnResit.style.display = 'flex';
+                btnResit.onclick = () => { closeModal('modal-tindakan'); bukaBorangYuran(nama); };
+            } else if (ro === 'guru') {
+                btnResit.style.display = 'none'; // Guru tak perlu urus resit
+            } else {
+                // Pelajar
+                btnResit.innerHTML = '<div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm"><i class="fa-solid fa-receipt"></i></div> Lihat Resit Terkini';
+                btnResit.style.display = 'flex';
+                btnResit.onclick = () => { closeModal('modal-tindakan'); lihatResitPelajar(nama); };
+            }
+
+            btnLaporan.onclick = () => {
+                closeModal('modal-tindakan');
+                bukaLaporan(nama, guru);
+            };
+            
+            openModal('modal-tindakan');
+        }
+
+        function lihatResitPelajar(nama) {
+            const resitPelajar = myYuran.filter(y => y[2] === nama);
+            if (resitPelajar.length > 0) {
+                const latest = resitPelajar[resitPelajar.length - 1]; // Ambil rekod resit terakhir/terkini
+                // format myYuran: [noResit, tarikh, nama, bulan, jumlah, kaedah]
+                paparResit(latest[0], latest[2], latest[1], latest[5], latest[3], latest[4]);
+            } else {
+                alert("Tiada rekod resit bayaran dijumpai untuk anda setakat ini.");
+            }
+        }
+
+        function kemaskiniUI_Kehadiran() {
+<!-- ... existing code ... -->
+```
+
+*(Selepas ditukar, klik butang **Commit changes**)*
+
+### Apa yang berlaku selepas kemaskini ini?
+1. Apabila log masuk sebagai **Pelajar**, mereka akan melihat jadual yang menayangkan nama mereka sahaja.
+2. Apabila mereka **klik jadual** tersebut, satu kotak menu akan muncul dengan dua butang sahaja: **"Lihat Laporan Prestasi"** dan **"Lihat Resit Terkini"**.
+3. Jika ditekan Laporan, ia buka slip seperti biasa tanpa ada butang 'Pen (Edit)'.
+4. Jika ditekan Resit, sistem akan semak rekod Yuran mereka yang paling terkini, dan terus buka Resit Rasmi (juga tanpa borang bayaran).
+
+Cuba uji dengan log masuk menggunakan ID Pelajar!
             const ro = currentUser.role.toLowerCase();
             
             if (ro !== 'admin' && ro !== 'pentadbir' && ro !== 'guru') {
