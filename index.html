@@ -748,6 +748,10 @@
     </div>
 
     <script>
+        // --- AMARAN: PASTE WEB APP URL ANDA DI BAWAH INI ---
+        // Letakkan di luar/atas sini supaya ia menjadi pembolehubah "Global"
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymarfgIGErICNhShs5Ymr1cSBhC3P9RdgYUTEFWTDnr7gHYYBv6hH91s3ecode9L6hdg/exec'; 
+
         // Logik mudah untuk pertukaran halaman dan Modal
         document.addEventListener('DOMContentLoaded', () => {
             const btnLogin = document.getElementById('btn-login');
@@ -757,10 +761,6 @@
             // Dapatkan rujukan kotak input
             const inputId = document.querySelector('input[type="text"]');
             const inputPass = document.querySelector('input[type="password"]');
-
-            // --- AMARAN: PASTE WEB APP URL ANDA DI BAWAH INI ---
-            // Gantikan tulisan MASUKKAN_URL_WEB_APP_ANDA_DI_SINI dengan URL dari Fasa 1
-            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymarfgIGErICNhShs5Ymr1cSBhC3P9RdgYUTEFWTDnr7gHYYBv6hH91s3ecode9L6hdg/exec'; 
 
             // Fungsi Log Masuk Sebenar (Berhubung dengan Google Sheets)
             btnLogin.addEventListener('click', async () => {
