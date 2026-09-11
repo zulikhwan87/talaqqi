@@ -500,22 +500,67 @@
             const btnLogin = document.getElementById('btn-login');
             const viewLogin = document.getElementById('view-login');
             const viewDashboard = document.getElementById('view-dashboard');
+            
+            // Dapatkan rujukan kotak input
+            const inputId = document.querySelector('input[type="text"]');
+            const inputPass = document.querySelector('input[type="password"]');
 
-            // Fungsi Log Masuk
-            btnLogin.addEventListener('click', () => {
-                // Tambah efek loading ringkas (opsyenal)
+            // --- AMARAN: PASTE WEB APP URL ANDA DI BAWAH INI ---
+            // Gantikan tulisan MASUKKAN_URL_WEB_APP_ANDA_DI_SINI dengan URL dari Fasa 1
+            const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbymarfgIGErICNhShs5Ymr1cSBhC3P9RdgYUTEFWTDnr7gHYYBv6hH91s3ecode9L6hdg/exec'; 
+
+            // Fungsi Log Masuk Sebenar (Berhubung dengan Google Sheets)
+            btnLogin.addEventListener('click', async () => {
+                const idValue = inputId.value.trim();
+                const passValue = inputPass.value.trim();
+
+                // Semak jika kotak kosong
+                if (!idValue || !passValue) {
+                    alert('Sila masukkan ID dan Kata Laluan!');
+                    return;
+                }
+
+                // Tambah efek loading
                 const originalText = btnLogin.innerHTML;
-                btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyemak...';
+                btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyemak Database...';
+                btnLogin.disabled = true; // Elak pengguna klik banyak kali
                 
-                setTimeout(() => {
-                    // Sembunyikan Login, Tunjukkan Dashboard
-                    viewLogin.style.transform = 'translateY(-100%)'; // Animasi slide up
-                    setTimeout(() => {
-                        viewLogin.classList.add('hidden');
-                        viewDashboard.classList.remove('hidden');
+                try {
+                    // Hantar data ke Google Sheets menggunakan kaedah Fetch API
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        // Guna text/plain untuk elak isu keselamatan CORS Google
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8', 
+                        },
+                        body: JSON.stringify({ userId: idValue, password: passValue })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    // Semak jika Google Sheets menjawab 'success'
+                    if (result.status === 'success') {
+                        // Sembunyikan Login, Tunjukkan Dashboard
+                        viewLogin.style.transform = 'translateY(-100%)'; 
+                        
+                        setTimeout(() => {
+                            viewLogin.classList.add('hidden');
+                            viewDashboard.classList.remove('hidden');
+                            btnLogin.innerHTML = originalText;
+                            btnLogin.disabled = false;
+                        }, 300);
+                    } else {
+                        // Jika salah ID atau Password
+                        alert(result.message || "ID atau Kata Laluan Salah!");
                         btnLogin.innerHTML = originalText;
-                    }, 300); // Tunggu animasi selesai
-                }, 600); // Simulasi delay network
+                        btnLogin.disabled = false;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Ralat sistem. Sila periksa sambungan internet atau pastikan Web App URL betul.');
+                    btnLogin.innerHTML = originalText;
+                    btnLogin.disabled = false;
+                }
             });
         });
 
