@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sistem TalaqqiGO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            pink: '#F43F5E', // Rose 500
+                            lightpink: '#FFE4E6', // Rose 100
+                            gradientStart: '#EC4899', // Pink 500
+                            gradientEnd: '#FBBF24', // Amber 400
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Sembunyikan scrollbar untuk paparan lebih kemas seperti app */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .bg-login-gradient {
+            background: radial-gradient(circle at top left, #fdf4ff, #ecfdf5, #fff1f2);
+        }
+        .modal-enter {
+            animation: slideUp 0.3s ease-out forwards;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-200 flex justify-center items-center min-h-screen">
+
+    <!-- App Container (Mobile Size Constraint) -->
+    <div id="app-container" class="w-full max-w-[400px] h-[100dvh] bg-white relative overflow-hidden shadow-2xl sm:rounded-[2.5rem] sm:h-[850px] sm:border-8 border-gray-900 flex flex-col">
+        
+        <!-- ========================================== -->
+        <!-- VIEW 1: LOGIN PAGE                         -->
+        <!-- ========================================== -->
+        <div id="view-login" class="absolute inset-0 z-10 bg-login-gradient flex flex-col p-6 transition-transform duration-300">
+            <div class="flex-1 flex flex-col justify-center relative z-10">
+                <!-- White Card Container -->
+                <div class="bg-white/80 backdrop-blur-md rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50">
+                    
+                    <!-- Logo Area -->
+                    <div class="flex justify-center mb-4">
+                        <div class="w-20 h-20 bg-brand-pink rounded-2xl flex items-center justify-center shadow-lg shadow-rose-200">
+                            <!-- Arabic letter Ta placeholder -->
+                            <span class="text-white text-4xl font-bold" style="font-family: 'Amiri', serif;">ت</span>
+                        </div>
+                    </div>
+
+                    <!-- Badge & Title -->
+                    <div class="text-center mb-8">
+                        <span class="inline-flex items-center gap-1 bg-brand-lightpink text-brand-pink text-xs font-semibold px-3 py-1 rounded-full mb-3">
+                            🌸 TalaqqiGO
+                        </span>
+                        <h1 class="text-2xl font-extrabold text-gray-800 leading-tight">REKOD TALAQQI</h1>
+                        <p class="text-xs text-gray-500 mt-2">Portal Pengurusan Kelas, Kehadiran & Mutabaah Al-Quran</p>
+                    </div>
+
+                    <!-- Form -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 tracking-wide">ID PENGGUNA / NO. WHATSAPP</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-regular fa-user text-gray-400"></i>
+                                </div>
+                                <input type="text" class="w-full pl-10 pr-3 py-3 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 bg-gray-50/50 text-sm placeholder-gray-400 transition-all" placeholder="Masukkan ID Pengguna anda">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-700 mb-1 tracking-wide">KATA LALUAN / PIN</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fa-solid fa-key text-gray-400"></i>
+                                </div>
+                                <input type="password" class="w-full pl-10 pr-3 py-3 border border-gray-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-300 bg-gray-50/50 text-sm placeholder-gray-400 transition-all" placeholder="Masukkan kata laluan anda">
+                            </div>
+                        </div>
+
+                        <button id="btn-login" class="w-full bg-brand-pink hover:bg-rose-600 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-rose-200 transition-all active:scale-95 flex items-center justify-center gap-2 mt-4">
+                            Log Masuk ke Sistem <i class="fa-solid fa-arrow-right text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- Footer Note -->
+                    <div class="mt-8 border-t border-gray-100 pt-6 text-center">
+                        <p class="text-[11px] text-emerald-600 flex items-center justify-center gap-1.5">
+                            <i class="fa-regular fa-circle-check"></i> Pangkalan Data Google Sheets Terpaut Selamat
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Background decorative shapes -->
+            <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div class="absolute -top-20 -right-20 w-64 h-64 bg-pink-100 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+                <div class="absolute -bottom-32 -left-20 w-80 h-80 bg-emerald-50 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: DASHBOARD                          -->
+        <!-- ========================================== -->
+        <div id="view-dashboard" class="absolute inset-0 z-0 bg-gray-50 flex flex-col hidden h-full overflow-y-auto pb-6">
+            
+            <!-- Top Navbar -->
+            <div class="sticky top-0 z-20 bg-gray-50/90 backdrop-blur px-5 py-4 flex justify-between items-center">
+                <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-brand-pink border border-gray-100">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="bg-white px-4 py-1.5 rounded-full shadow-sm text-xs font-semibold text-gray-700 border border-gray-100">
+                    Jumaat, 11 September 2026
+                </div>
+                <div class="flex gap-2">
+                    <button class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm text-brand-pink border border-gray-100">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                    <div class="w-10 h-10 bg-brand-pink rounded-full flex items-center justify-center text-white font-bold shadow-sm">
+                        P
+                    </div>
+                </div>
+            </div>
+
+            <div class="px-5 space-y-4">
+                <!-- Welcome Banner -->
+                <div class="bg-gradient-to-br from-brand-gradientStart to-brand-gradientEnd rounded-[1.5rem] p-6 text-white shadow-lg shadow-pink-200">
+                    <p class="text-xs font-medium text-white/80 mb-1" style="font-family: 'Amiri', serif;">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</p>
+                    <h2 class="text-xl font-bold mb-2 flex items-center gap-2">
+                        Selamat Datang, Pentadbir Utama! 🌸
+                    </h2>
+                    <p class="text-xs text-white/90 leading-relaxed mb-4">
+                        Pusat pemantauan rekod talaqqi Al-Quran, mutabaah tajwid harian, dan kehadiran pelajar secara sistematik.
+                    </p>
+                    <button class="bg-white/20 hover:bg-white/30 backdrop-blur text-white text-sm font-semibold py-2 px-4 rounded-full transition border border-white/30 flex items-center gap-2">
+                        <i class="fa-regular fa-circle-check"></i> Semak Kehadiran
+                    </button>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Stat Card 1 -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-gray-500">Pelajar Aktif</span>
+                            <div class="w-6 h-6 bg-pink-50 rounded-full flex items-center justify-center text-brand-pink"><i class="fa-solid fa-graduation-cap text-[10px]"></i></div>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800">6</span>
+                    </div>
+                    <!-- Stat Card 2 -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-gray-500">Guru Aktif</span>
+                            <div class="w-6 h-6 bg-blue-50 rounded-full flex items-center justify-center text-blue-500"><i class="fa-solid fa-users text-[10px]"></i></div>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800">1</span>
+                    </div>
+                    <!-- Stat Card 3 -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-gray-500">Kelas Bulan Ini</span>
+                            <div class="w-6 h-6 bg-amber-50 rounded-full flex items-center justify-center text-amber-500"><i class="fa-solid fa-book-open text-[10px]"></i></div>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800">0</span>
+                    </div>
+                    <!-- Stat Card 4 -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-gray-500">Kutipan Bulan Ini</span>
+                            <div class="w-6 h-6 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-500"><i class="fa-solid fa-wallet text-[10px]"></i></div>
+                        </div>
+                        <span class="text-xl font-bold text-emerald-600">RM 10.00</span>
+                    </div>
+                    <!-- Stat Card 5 -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-gray-500">Belum Bayar</span>
+                            <div class="w-6 h-6 bg-red-50 rounded-full flex items-center justify-center text-red-500"><i class="fa-solid fa-circle-exclamation text-[10px]"></i></div>
+                        </div>
+                        <span class="text-2xl font-bold text-red-500">0</span>
+                    </div>
+                    <!-- Stat Card 6 -->
+                    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-xs font-semibold text-gray-500">Laporan Menanti</span>
+                            <div class="w-6 h-6 bg-purple-50 rounded-full flex items-center justify-center text-purple-500"><i class="fa-solid fa-clipboard-list text-[10px]"></i></div>
+                        </div>
+                        <span class="text-2xl font-bold text-gray-800">0</span>
+                    </div>
+                </div>
+
+                <!-- Classes Today Section -->
+                <div class="bg-white rounded-[1.5rem] p-5 shadow-sm border border-gray-100 mt-2">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-brand-lightpink rounded-xl flex items-center justify-center text-brand-pink">
+                                <i class="fa-regular fa-calendar-check"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-800 text-sm">Kelas Talaqqi Hari Ini</h3>
+                                <p class="text-[10px] text-gray-500">Jadual sesi kelas talaqqi yang berlangsung pada hari ini</p>
+                            </div>
+                        </div>
+                        <button class="text-brand-pink text-xs font-semibold whitespace-nowrap flex items-center gap-1">
+                            Lihat Semua <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    <!-- Mock List Items with Actions -->
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-4 gap-1 text-[10px] font-bold text-gray-400 pb-2 border-b border-gray-100">
+                            <div>Masa</div>
+                            <div class="col-span-2">Pelajar</div>
+                            <div class="text-right">Tindakan</div>
+                        </div>
+                        
+                        <!-- Item 1 -->
+                        <div class="grid grid-cols-4 gap-2 items-center text-xs py-2 border-b border-gray-50">
+                            <div class="font-semibold text-gray-700">8:00 PM</div>
+                            <div class="col-span-2">
+                                <p class="font-bold text-gray-800">Mirza</p>
+                                <p class="text-[10px] text-gray-500">Ustazah Tasya Fitri</p>
+                            </div>
+                            <div class="flex flex-col gap-1 items-end">
+                                <button onclick="openModal('modal-report')" class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-[10px] font-semibold hover:bg-purple-200 transition">Laporan</button>
+                                <button onclick="openModal('modal-receipt')" class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-[10px] font-semibold hover:bg-emerald-200 transition">Resit</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Empty State Example if needed, but keeping list populated for demo -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL 1: REPORT SLIP                       -->
+        <!-- ========================================== -->
+        <div id="modal-report" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-sm sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col modal-enter relative">
+                
+                <!-- Modal Header -->
+                <div class="px-5 py-4 flex justify-between items-center border-b border-gray-100 bg-white sticky top-0 z-10">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-ribbon text-brand-pink"></i> Slip Laporan Prestasi & Mutabaah Pelajar
+                    </h3>
+                    <button onclick="closeModal('modal-report')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Content (Scrollable) -->
+                <div class="p-5 overflow-y-auto flex-1 bg-white">
+                    
+                    <!-- Header Report -->
+                    <div class="flex items-center gap-3 mb-6 bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                        <div class="w-12 h-12 bg-brand-pink rounded-xl flex items-center justify-center">
+                            <span class="text-white text-2xl font-bold" style="font-family: 'Amiri', serif;">ت</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-gray-900 text-xs tracking-wide">TALAQQIGO</h4>
+                            <p class="text-[10px] text-brand-pink font-semibold">SLIP MUTABAAH & PRESTASI AL-QURAN</p>
+                        </div>
+                        <div class="text-right text-[10px] text-gray-500">
+                            Tarikh:<br><span class="font-semibold text-gray-700">11/9/2026</span>
+                        </div>
+                    </div>
+
+                    <!-- Student Info Grid -->
+                    <div class="grid grid-cols-2 gap-4 mb-6 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Nama Pelajar:</p>
+                            <p class="font-bold text-gray-800 text-sm">Mirza</p>
+                            <p class="text-[10px] text-brand-pink font-semibold">ID Pelajar: P001</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Guru Pembimbing:</p>
+                            <p class="font-bold text-gray-800 text-sm">Ustazah Tasya Fitri</p>
+                            <p class="text-[10px] text-gray-600">Pengajian Asas (Online)</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Umur & Peringkat:</p>
+                            <p class="font-bold text-gray-800 text-sm">8 Tahun</p>
+                            <p class="text-[10px] text-gray-600">Mula: 2026-09-11</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Penjaga & Whatsapp:</p>
+                            <p class="font-bold text-gray-800 text-sm">-</p>
+                            <p class="text-[10px] text-gray-600">WhatsApp: 182048724</p>
+                        </div>
+                    </div>
+
+                    <!-- Current Level section -->
+                    <div class="bg-yellow-50/50 border border-yellow-100 rounded-2xl p-4 mb-6 relative overflow-hidden">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-bold text-gray-800 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-book-open text-gray-500"></i> Tahap & Bacaan Semasa
+                            </h4>
+                            <span class="bg-yellow-200/50 text-yellow-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Iqra</span>
+                        </div>
+                        <p class="text-xl font-bold text-gray-900 mb-3">Iqra' 5</p>
+                        
+                        <div class="flex justify-between text-[10px] font-bold mb-1">
+                            <span class="text-gray-600">Peratusan Kemajuan Pengajian:</span>
+                            <span class="text-gray-900">50%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-brand-pink h-2 rounded-full" style="width: 50%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Tajweed Mastery Grid -->
+                    <div class="mb-6">
+                        <h4 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-brand-pink"></i> Penilaian Penguasaan Hukum Tajwid
+                        </h4>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="bg-gray-50 border border-gray-100 rounded-xl p-3 flex justify-between items-center">
+                                <span class="text-[11px] text-gray-600 font-medium">Hukum Nun<br>Sakinah</span>
+                                <span class="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-1 rounded text-center leading-tight">Belum<br>Belajar</span>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-100 rounded-xl p-3 flex justify-between items-center">
+                                <span class="text-[11px] text-gray-600 font-medium">Hukum Mim<br>Sakinah</span>
+                                <span class="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-1 rounded text-center leading-tight">Belum<br>Belajar</span>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-3 flex justify-between items-center">
+                                <span class="text-[11px] text-gray-700 font-medium">Hukum Mad<br>(Panjang)</span>
+                                <span class="bg-yellow-200 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded text-center leading-tight">Sedang<br>Belajar</span>
+                            </div>
+                            <div class="bg-yellow-50 border border-yellow-100 rounded-xl p-3 flex justify-between items-center">
+                                <span class="text-[11px] text-gray-700 font-medium">Hukum<br>Qalqalah</span>
+                                <span class="bg-yellow-200 text-yellow-800 text-[10px] font-bold px-2 py-1 rounded text-center leading-tight">Sedang<br>Belajar</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Stats -->
+                    <div class="bg-teal-50/30 border border-teal-100 rounded-2xl p-4 flex justify-between text-center mb-6">
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Jumlah Sesi</p>
+                            <p class="font-bold text-gray-800">1 Sesi</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Hadir</p>
+                            <p class="font-bold text-teal-600">1 Sesi</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Tidak Hadir</p>
+                            <p class="font-bold text-brand-pink">0 Sesi</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] text-gray-500 font-medium mb-1">Peratus<br>Kehadiran</p>
+                            <p class="font-bold text-indigo-600">100%</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Comments -->
+                    <div class="bg-red-50/50 border border-red-100 rounded-2xl p-4">
+                        <h4 class="font-bold text-brand-pink text-xs mb-2">Catatan & Ulasan Guru Pembimbing:</h4>
+                        <p class="text-xs text-gray-700 italic">"Prestasi baik, perlu lebih fokus pada sebutan makhraj huruf."</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- MODAL 2: RECEIPT                           -->
+        <!-- ========================================== -->
+        <div id="modal-receipt" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+            <div class="bg-white w-full h-[90vh] sm:h-auto sm:max-h-[90vh] sm:max-w-sm sm:rounded-3xl rounded-t-3xl overflow-hidden flex flex-col modal-enter relative">
+                
+                <!-- Modal Header -->
+                <div class="px-5 py-4 flex justify-between items-center border-b border-gray-100 bg-white sticky top-0 z-10">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-receipt text-emerald-500"></i> Resit Pembayaran Rasmi
+                    </h3>
+                    <button onclick="closeModal('modal-receipt')" class="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 bg-gray-50 rounded-full">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Modal Content (Scrollable) -->
+                <div class="p-6 overflow-y-auto flex-1 bg-white">
+                    
+                    <!-- Receipt Header -->
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 bg-brand-pink rounded-xl flex items-center justify-center mx-auto mb-3 shadow-md shadow-rose-200">
+                            <span class="text-white text-2xl font-bold" style="font-family: 'Amiri', serif;">ت</span>
+                        </div>
+                        <h2 class="font-black text-gray-900 text-lg tracking-wide">TALAQQIGO</h2>
+                        <p class="text-[10px] font-bold text-brand-pink uppercase tracking-widest mt-1">Pusat Bimbingan & Pengajian Al-Quran</p>
+                        <p class="text-[10px] text-gray-500 mt-2">No. Pendaftaran SSM: 202503233770 (JM1030730-A)</p>
+                        <p class="text-[9px] text-gray-400">No. Telefon: 011-58607882 | Emel: tajwidplusempire@gmail.com</p>
+                    </div>
+
+                    <!-- Receipt Status Bar -->
+                    <div class="bg-gray-50 border border-gray-100 rounded-xl p-3 flex justify-between items-center mb-6">
+                        <div>
+                            <p class="text-[9px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">NO. RESIT:</p>
+                            <p class="font-bold text-brand-pink text-sm">RESIT #B001</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[9px] text-gray-500 uppercase font-bold tracking-wider mb-0.5">STATUS:</p>
+                            <span class="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-3 py-1 rounded-full">LUNAS / SELESAI</span>
+                        </div>
+                    </div>
+
+                    <!-- Receipt Details Grid -->
+                    <div class="space-y-2 text-xs mb-6 border-b border-gray-100 pb-6">
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Nama Pelajar:</span>
+                            <span class="font-bold text-gray-800">Mirza</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">ID Pelajar:</span>
+                            <span class="font-bold text-gray-800">P001</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Nama Penjaga:</span>
+                            <span class="font-bold text-gray-800">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">No. Telefon:</span>
+                            <span class="font-bold text-gray-800">182048724</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Tarikh Pembayaran:</span>
+                            <span class="font-bold text-gray-800">2026-09-11</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">Kaedah Bayaran:</span>
+                            <span class="font-bold text-gray-800">Online Banking / DuitNow</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-500">No. Rujukan (Ref):</span>
+                            <span class="font-bold text-gray-800">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Itemized List -->
+                    <div class="mb-6">
+                        <div class="flex justify-between font-bold text-gray-800 text-xs mb-2 border-b border-gray-100 pb-2">
+                            <span>Perkara</span>
+                            <span>Jumlah</span>
+                        </div>
+                        <div class="flex justify-between items-start text-sm">
+                            <div>
+                                <p class="font-bold text-gray-800">Yuran Pengajian Al-Quran</p>
+                                <p class="text-[10px] text-gray-500">Bulan: Januari 2026</p>
+                            </div>
+                            <p class="font-bold text-gray-900">RM 10.00</p>
+                        </div>
+                    </div>
+
+                    <!-- Total Box -->
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex justify-between items-center mb-8">
+                        <span class="font-bold text-gray-800 text-sm uppercase tracking-wide">JUMLAH DITERIMA:</span>
+                        <span class="font-black text-emerald-600 text-xl">RM 10.00</span>
+                    </div>
+
+                    <!-- Footer Note -->
+                    <div class="text-center">
+                        <p class="text-brand-pink font-bold italic text-sm mb-2">"Jazakumullahu Khairan Kathira"</p>
+                        <p class="text-[9px] text-gray-400 max-w-[250px] mx-auto leading-relaxed">
+                            Resit ini dijana secara digital oleh Sistem TalaqqiGO. Tiada tandatangan fizikal diperlukan.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Logik mudah untuk pertukaran halaman dan Modal
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnLogin = document.getElementById('btn-login');
+            const viewLogin = document.getElementById('view-login');
+            const viewDashboard = document.getElementById('view-dashboard');
+
+            // Fungsi Log Masuk
+            btnLogin.addEventListener('click', () => {
+                // Tambah efek loading ringkas (opsyenal)
+                const originalText = btnLogin.innerHTML;
+                btnLogin.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyemak...';
+                
+                setTimeout(() => {
+                    // Sembunyikan Login, Tunjukkan Dashboard
+                    viewLogin.style.transform = 'translateY(-100%)'; // Animasi slide up
+                    setTimeout(() => {
+                        viewLogin.classList.add('hidden');
+                        viewDashboard.classList.remove('hidden');
+                        btnLogin.innerHTML = originalText;
+                    }, 300); // Tunggu animasi selesai
+                }, 600); // Simulasi delay network
+            });
+        });
+
+        // Fungsi buka modal (dipanggil dari butang dalam HTML)
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.remove('hidden');
+                // Menghentikan scroll di body/dashboard apabila modal dibuka
+                document.getElementById('view-dashboard').style.overflow = 'hidden';
+            }
+        }
+
+        // Fungsi tutup modal
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if(modal) {
+                modal.classList.add('hidden');
+                // Mengembalikan fungsi scroll
+                document.getElementById('view-dashboard').style.overflow = 'auto';
+            }
+        }
+        
+        // Menutup modal jika pengguna klik di luar kawasan putih (pada overlay hitam)
+        window.onclick = function(event) {
+            const reportModal = document.getElementById('modal-report');
+            const receiptModal = document.getElementById('modal-receipt');
+            
+            if (event.target == reportModal) {
+                closeModal('modal-report');
+            }
+            if (event.target == receiptModal) {
+                closeModal('modal-receipt');
+            }
+        }
+    </script>
+</body>
+</html>
